@@ -1,15 +1,35 @@
 const createError = require('http-errors');
 const express = require('express');
+const cors = require('cors');
 const path = require('path');
-const cookieParser = require('cookie-parser');
 const logger = require('morgan');
+const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
+const passport = require('passport');
+const session = require('express-session');
+const mongoose = require('mongoose');
+require('dotenv').config();
 
+// require models
+const User = require('./models/user');
+
+// require route
 const indexRouter = require('./routes/index');
-const usersRouter = require('./routes/users');
 const postsRouter = require('./routes/posts');
 const reviewsRouter = require('./routes/reviews');
 
 const app = express();
+
+// connect to mongoose
+const uri = process.env.ATLAS_URI;
+mongoose.connect(uri, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true, useFindAndModify: false });
+
+const db = mongoose.connection;
+
+db.on('error', console.error.bind(console, 'connection error!'));
+db.once('open', () => {
+  console.log("Mongoose connected");
+});
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -21,8 +41,19 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// config passport & session
+app.use(session({
+  secret: 'hang ten dude!',
+  resave: false,
+  saveUninitialized: true
+}));
+
+passport.use(User.createStrategy());
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
+// Mount routes
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
 app.use('/posts', postsRouter);
 app.use('/posts/:id/reviews', reviewsRouter);
 

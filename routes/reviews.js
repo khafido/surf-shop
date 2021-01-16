@@ -24,7 +24,7 @@ router.put('/:review_id', function(req, res, next) {
 });
 
 // DELETE  destroy  /posts/:id/reviews/:review_id
-router.delete('/:// REVIEW: _id', function(req, res, next) {
+router.delete('/:review_id', function(req, res, next) {
   res.send('DELETE /posts/:id/reviews/:review_id');
 });
 
