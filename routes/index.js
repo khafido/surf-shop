@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const passport = require('passport');
-const { postRegister } = require('../controllers/index');
+const { postRegister, postLogin, getLogout } = require('../controllers/index');
 const { errorHandler } = require('../middleware/index');
 
 /* GET home page. */
@@ -23,10 +22,11 @@ router.get('/login', function(req, res, next){
 });
 
 // POST /login
-router.post('/login', passport.authenticate('local', {
-  successRedirect: '/',
-  failureRedirect: '/login'
-}));
+router.post('/login', postLogin);
+
+
+// GET /logout
+router.get('/logout', getLogout);
 
 // GET /profile
 router.get('/profile', function(req, res, next){
@@ -56,12 +56,6 @@ router.get('/reset-pw/:token', function(req, res, next){
 // PUT /reset-pw
 router.put('/reset-pw/:token', function(req, res, next){
   res.send('PUT /reset-pw/:token');
-});
-
-// GET /logout
-router.get('/logout', function (req, res, next){
-  req.logout;
-  res.redirect("/");
 });
 
 module.exports = router;
